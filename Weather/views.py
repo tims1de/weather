@@ -19,19 +19,18 @@ def index(request):
 
             try:
                 response = requests.get(url.format(city_name))
-                response.raise_for_status()
                 weather_data = response.json()
 
-                if weather_data['cod'] == 200:
+                if response.status_code == 200 and weather_data.get('cod') == 200:
                     form.save()
-                    messages.success(request, 'Город успешно добавлен')
+                    messages.success(request, 'Город успешно добавлен!')
                 else:
-                    messages.error(request, 'Город не найден')
+                    messages.error(request, 'Город не найден!')
 
             except requests.exceptions.RequestException as e:
-                messages.error(request, f'Ошибка соединения: {str(e)}')
-            except KeyError:
-                messages.error(request, 'Некорректный ответ от сервера погоды')
+                messages.error(request, f'Ошибка соединения: {str(e)}!')
+            except ValueError:
+                messages.error(request, 'Ошибка при обработке ответа от сервера!')
 
     cities = City.objects.all()
 
